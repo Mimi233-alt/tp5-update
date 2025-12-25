@@ -11,22 +11,27 @@ export default function TabNavigator() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerShown: false,
+        headerShown: false, // pas d'en-tête pour les onglets
 
         tabBarIcon: ({ focused, color, size }) => {
-          let icon;
+          let iconName;
 
-          if (route.name === 'Maison') {
-            icon = focused ? 'home' : 'home-outline';
-          } else if (route.name === 'Paramètres') {
-            icon = focused ? 'settings' : 'settings-outline';
+          switch (route.name) {
+            case 'Maison':
+              iconName = focused ? 'home' : 'home-outline';
+              break;
+            case 'Paramètres':
+              iconName = focused ? 'settings' : 'settings-outline';
+              break;
+            default:
+              iconName = 'help-circle-outline';
           }
 
-          return <Icon name={icon} size={22} color={color} />;
+          return <Icon name={iconName} size={size} color={color} />;
         },
 
         tabBarActiveTintColor: "#007bff",
-        tabBarInactiveTintColor: "gray"
+        tabBarInactiveTintColor: "gray",
       })}
     >
       <Tab.Screen name="Maison" component={HomeStack} />

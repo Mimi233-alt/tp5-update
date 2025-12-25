@@ -1,21 +1,28 @@
+// App.js
+import React, { useContext } from "react";
 import { NavigationContainer } from "@react-navigation/native";
-import AuthProvider from "./context/AuthContext";
+import { Provider } from "react-redux";
+import { store } from "./store/store";
+
+import AuthProvider, { AuthContext } from "./context/AuthContext";
 import AppDrawer from "./navigation/AppDrawer";
 import LoginScreen from "./screens/LoginScreen";
-import { useContext } from "react";
-import { AuthContext } from "./context/AuthContext";
 
+// Composant qui décide quelle navigation afficher
 function RootNavigator() {
   const { user } = useContext(AuthContext);
   return user ? <AppDrawer /> : <LoginScreen />;
 }
 
+// Composant principal App
 export default function App() {
   return (
-    <AuthProvider>
-      <NavigationContainer>
-        <RootNavigator />
-      </NavigationContainer>
-    </AuthProvider>
+    <Provider store={store}>
+      <AuthProvider>
+        <NavigationContainer>
+          <RootNavigator />
+        </NavigationContainer>
+      </AuthProvider>
+    </Provider>
   );
 }

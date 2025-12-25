@@ -1,24 +1,34 @@
-import React from "react";
-import { View, FlatList, Text, StyleSheet } from "react-native";
+import React, { useEffect } from "react";
+import { View, Text, FlatList, TouchableOpacity } from "react-native";
 import AppBar from "../components/AppBar";
+import { useTodoStore } from "../store/useTodoStore";
 
-export default function TooListScreen() {
+export default function TodoListScreen({ navigation }) {
+  const { todos, addTodo } = useTodoStore();
+
+  // Ajouter des tâches initiales au montage
+  useEffect(() => {
+    addTodo({ id: 1, title: "Faire les courses" });
+    addTodo({ id: 2, title: "Sortir le chien" });
+    addTodo({ id: 3, title: "Coder une app RN" });
+  }, [addTodo]);
+
+  const renderItem = ({ item }) => (
+    <TouchableOpacity
+      onPress={() => navigation.navigate("TodoDetails", item)}
+    >
+      <Text style={{ padding: 10, fontSize: 18 }}>{item.title}</Text>
+    </TouchableOpacity>
+  );
+
   return (
-    <View style={styles.container}>
-      {/* AppBar en haut */}
+    <View style={{ flex: 1, padding: 20 }}>
       <AppBar title="Mes tâches" />
-
-      {/* Liste des tâches */}
       <FlatList
-        data={[]}
-        keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text>{item.title}</Text>}
+        data={todos}
+        keyExtractor={(item) => item.id.toString()}
+        renderItem={renderItem}
       />
     </View>
   );
 }
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-});

@@ -1,28 +1,56 @@
-// App.js
-import React, { useContext } from "react";
-import { NavigationContainer } from "@react-navigation/native";
-import { Provider } from "react-redux";
-import { store } from "./store/store";
+import { useEffect, useState, useContext } from "react";
+import { View, StyleSheet, ActivityIndicator } from "react-native";
+import { initDB } from "./services/database";
+import { ThemeProvider, ThemeContext } from "./context/ThemeContext";
+import TodoListOfflineScreen from "./screens/TodoListOfflineScreen";
 
-import AuthProvider, { AuthContext } from "./context/AuthContext";
-import AppDrawer from "./navigation/AppDrawer";
-import LoginScreen from "./screens/LoginScreen";
+function MainApp() {
+  const { theme } = useContext(ThemeContext);
 
-// Composant qui décide quelle navigation afficher
-function RootNavigator() {
-  const { user } = useContext(AuthContext);
-  return user ? <AppDrawer /> : <LoginScreen />;
-}
-
-// Composant principal App
-export default function App() {
   return (
-    <Provider store={store}>
-      <AuthProvider>
-        <NavigationContainer>
-          <RootNavigator />
-        </NavigationContainer>
-      </AuthProvider>
-    </Provider>
+    <>
+      <View
+        style={[
+          styles.container,
+          theme === "dark" ? styles.dark : styles.light,
+        ]}
+      />
+      <TodoListOfflineScreen />
+    </>
   );
 }
+
+export default function App() {
+  const [dbReady, setDbReady] = useState(false);
+
+  useEffect(() => {
+    const prepareDb = async () => {
+      await initDB(); // attendre SQLite
+      setDbReady(true); // OK pour afficher l’app
+    };
+    prepareDb();
+  }, []);
+
+  if (!dbReady) {
+    return <ActivityIndicator size="large" />;
+  }
+
+  return (
+    <ThemeProvider>
+      <MainApp />
+    </ThemeProvider>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    paddingTop: 40,
+  },
+  light: {
+    backgroundColor: "#ffffff",
+  },
+  dark: {
+    backgroundColor: "#121212",
+  },
+});
